@@ -1,0 +1,201 @@
+/* ---------- Tokens ---------- */
+:root {
+  --slider-duration: 500ms;
+  --slider-easing: cubic-bezier(0.65, 0, 0.35, 1);
+  --slider-radius: 12px;
+  --slider-accent: #ffffff;
+  --slider-control-bg: rgba(20, 20, 20, 0.45);
+  --slider-control-bg-hover: rgba(20, 20, 20, 0.75);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+/* ---------- Demo page layout (not part of the library) ---------- */
+.demo {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.demo h1,
+.demo h2 {
+  margin: 0 0 1rem;
+}
+
+.demo h2 {
+  margin-top: 3rem;
+  font-size: 1.1rem;
+}
+
+.demo__narrow {
+  max-width: 420px;
+}
+
+/* ---------- Slider component ---------- */
+.slider {
+  position: relative;
+  width: 100%;              /* fluid: follows the parent's width */
+  margin: 0 auto;
+  border-radius: var(--slider-radius);
+  background: #111;
+}
+
+/* The mask: hides everything outside the current slide */
+.slider__viewport {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;     /* height follows width at every breakpoint */
+  border-radius: inherit;
+}
+
+/* The sliding strip: slides sit side by side in one flex row */
+.slider__track {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  will-change: transform;   /* promote to its own GPU layer */
+  transition: transform var(--slider-duration) var(--slider-easing);
+}
+
+/* Disabled while JS silently jumps from a clone to the real slide */
+.slider__track.is-jumping {
+  transition: none;
+}
+
+.slider__slide {
+  flex: 0 0 100%;           /* every slide is exactly one viewport wide */
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+}
+
+.slider__slide img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;        /* fill the frame, keep the aspect ratio, no distortion */
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- Arrows ---------- */
+.slider__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--slider-control-bg);
+  color: var(--slider-accent);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease;
+}
+
+.slider__arrow:hover {
+  background: var(--slider-control-bg-hover);
+}
+
+.slider__arrow--prev { left: 12px; }
+.slider__arrow--next { right: 12px; }
+
+.slider__arrow svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Dots ---------- */
+.slider__dots {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--slider-control-bg);
+  transform: translateX(-50%);
+}
+
+.slider__dot {
+  display: grid;
+  place-items: center;
+  width: 22px;              /* generous hit area */
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.slider__dot::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.slider__dot:hover::before {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.slider__dot.is-active::before {
+  background: var(--slider-accent);
+  transform: scale(1.3);
+}
+
+/* ---------- Focus + accessibility ---------- */
+.slider__arrow:focus-visible,
+.slider__dot:focus-visible,
+.slider:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --slider-duration: 1ms;
+  }
+}
+
+/* ---------- Smaller screens ---------- */
+@media (max-width: 600px) {
+  .slider__arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .slider__arrow--prev { left: 8px; }
+  .slider__arrow--next { right: 8px; }
+
+  .slider__viewport {
+    aspect-ratio: 4 / 3;
+  }
+}
